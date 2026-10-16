@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0d16">
+<title>Phone Generator</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:24px 16px;min-height:100vh;background:radial-gradient(ellipse at top,#20204a 0,#0b0d16 55%);color:#f4f5ff;font-family:system-ui,Arial,sans-serif}main{max-width:620px;margin:auto}header{text-align:center;padding:12px 0 20px}h1{font-size:clamp(28px,7vw,40px);margin:8px 0;color:#a99dff}header p,.muted{color:#a9aec5;line-height:1.5}.panel{background:#151827eF;border:1px solid #30354e;border-radius:20px;padding:20px;box-shadow:0 18px 55px #0005}label{display:block;margin:16px 0 8px;font-weight:650}select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #414762;background:#0e1120;color:white;font-size:16px}button{background:linear-gradient(135deg,#7665ff,#5545d8);border:0;font-weight:750;margin-top:14px;cursor:pointer}button.secondary{background:#282e45;border:1px solid #414762}button:active{transform:scale(.99)}.note{font-size:13px;color:#a9aec5;line-height:1.5;margin-top:18px}.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}.results-head h2{font-size:18px}.number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:9px;background:#20243a;border:1px solid #303650;border-radius:12px}.number span{font-family:ui-monospace,monospace;overflow-wrap:anywhere}.number button{width:auto;flex-shrink:0;margin:0;padding:9px 12px;font-size:13px}.empty{color:#a9aec5;text-align:center;padding:18px 0}.footer{text-align:center;color:#747c98;font-size:12px;margin:18px 0}
+</style>
+</head>
+<body>
+<main>
+<header><div style="font-size:38px">☎</div><h1>Phone Generator</h1><p>Генератор демонстрационных телефонных данных</p></header>
+<section class="panel">
+<label for="country">Страна / код</label>
+<select id="country"><option value="+49">Германия (+49)</option><option value="+7">Россия (+7)</option><option value="+1">США (+1)</option><option value="+44">Великобритания (+44)</option><option value="+33">Франция (+33)</option><option value="+34">Испания (+34)</option><option value="+39">Италия (+39)</option><option value="+81">Япония (+81)</option></select>
+<label for="amount">Количество результатов</label>
+<select id="amount"><option value="1">1 результат</option><option value="10" selected>10 результатов</option><option value="50">50 результатов</option><option value="100">100 результатов</option></select>
+<button id="generate">✦ Сгенерировать</button>
+<button class="secondary" id="copyAll">Копировать весь список</button>
+<div class="results-head"><h2>Результаты</h2><span class="muted" id="count">0</span></div>
+<div id="results"><div class="empty">Нажми «Сгенерировать», чтобы начать.</div></div>
+<p class="note">Важно: результаты специально маскируются символами X и предназначены только для макетов и тестирования. Это не проверенные реальные номера, SIM-карты или номера для получения SMS.</p>
+</section>
+<div class="footer">Phone Generator · работает прямо в браузере</div>
+</main>
+<script>
+let numbers=[];
+const country=document.getElementById('country');
+const amount=document.getElementById('amount');
+const results=document.getElementById('results');
+const count=document.getElementById('count');
+function generate(){
+  const code=country.value;
+  const qty=Number(amount.value);
+  numbers=[];
+  for(let i=0;i<qty;i++){
+    let tail='';
+    for(let j=0;j<4;j++) tail+=Math.floor(Math.random()*10);
+    numbers.push(code+' XXX XXX '+tail);
+  }
+  render();
+}
+function render(){
+  results.replaceChildren();
+  count.textContent=numbers.length+' шт.';
+  numbers.forEach(number=>{
+    const row=document.createElement('div');row.className='number';
+    const value=document.createElement('span');value.textContent=number;
+    const btn=document.createElement('button');btn.className='secondary';btn.textContent='Копировать';
+    btn.addEventListener('click',()=>copyText(number));
+    row.append(value,btn);results.append(row);
+  });
+}
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('Скопировано!');
+  }catch(e){
+    const area=document.createElement('textarea');area.value=text;document.body.append(area);area.select();
+    const ok=document.execCommand('copy');area.remove();
+    alert(ok?'Скопировано!':'Не удалось скопировать. Выдели и скопируй текст вручную.');
+  }
+}
+document.getElementById('generate').addEventListener('click',generate);
+document.getElementById('copyAll').addEventListener('click',()=>{
+  if(!numbers.length){alert('Сначала сгенерируй результаты.');return;}
+  copyText(numbers.join('\n'));
+});
+</script>
+</body>
+</html>
