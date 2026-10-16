@@ -21,7 +21,7 @@
 <button class="secondary" id="copyAll">Копировать весь список</button>
 <div class="results-head"><h2>Результаты</h2><span class="muted" id="count">0</span></div>
 <div id="results"><div class="empty">Нажми «Сгенерировать», чтобы начать.</div></div>
-<p class="note">Важно: результаты специально маскируются символами X и предназначены только для макетов и тестирования. Это не проверенные реальные номера, SIM-карты или номера для получения SMS.</p>
+<p class="note">Важно: отображаются все цифры, но номера генерируются случайно и не проверяются. Это демонстрационные данные — они могут случайно совпасть с реальными номерами; не используй их для звонков или SMS.</p>
 </section>
 <div class="footer">Phone Generator · работает прямо в браузере</div>
 </main>
@@ -36,9 +36,9 @@ function generate(){
   const qty=Number(amount.value);
   numbers=[];
   for(let i=0;i<qty;i++){
-    let tail='';
-    for(let j=0;j<4;j++) tail+=Math.floor(Math.random()*10);
-    numbers.push(code+' XXX XXX '+tail);
+    let digits='';
+    for(let j=0;j<10;j++) digits+=Math.floor(Math.random()*10);
+    numbers.push(code+' '+digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6));
   }
   render();
 }
