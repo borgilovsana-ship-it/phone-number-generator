@@ -7,6 +7,9 @@
 <title>Phone Generator</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:24px 16px;min-height:100vh;background:radial-gradient(ellipse at top,#20204a 0,#0b0d16 55%);color:#f4f5ff;font-family:system-ui,Arial,sans-serif}main{max-width:620px;margin:auto}header{text-align:center;padding:12px 0 20px}h1{font-size:clamp(28px,7vw,40px);margin:8px 0;color:#a99dff}header p,.muted{color:#a9aec5;line-height:1.5}.panel{background:#151827eF;border:1px solid #30354e;border-radius:20px;padding:20px;box-shadow:0 18px 55px #0005}label{display:block;margin:16px 0 8px;font-weight:650}select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #414762;background:#0e1120;color:white;font-size:16px}button{background:linear-gradient(135deg,#7665ff,#5545d8);border:0;font-weight:750;margin-top:14px;cursor:pointer}button.secondary{background:#282e45;border:1px solid #414762}button:active{transform:scale(.99)}.note{font-size:13px;color:#a9aec5;line-height:1.5;margin-top:18px}.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}.results-head h2{font-size:18px}.number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:9px;background:#20243a;border:1px solid #303650;border-radius:12px}.number span{font-family:ui-monospace,monospace;overflow-wrap:anywhere}.number-info{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}.rarity{font:700 12px system-ui,Arial,sans-serif;letter-spacing:.2px}.price{font:700 14px system-ui,Arial,sans-serif;color:#ffcf62}.number button{width:auto;flex-shrink:0;margin:0;padding:9px 12px;font-size:13px}.empty{color:#a9aec5;text-align:center;padding:18px 0}.footer{text-align:center;color:#747c98;font-size:12px;margin:18px 0}
+.collection-screen{display:none;margin:0 0 16px;background:#101015;border:1px solid #24242d;border-radius:20px;padding:16px;min-height:70vh}
+.collection-screen.open{display:block}.collection-head{display:flex;align-items:center;gap:12px}.back-collection{width:42px;flex-shrink:0;margin:0;padding:8px;background:transparent;font-size:26px}.collection-title{font-size:25px;font-weight:750;flex:1}.collection-money{text-align:right;color:#f1f1f5;font-size:22px;font-weight:750}.collection-meta{text-align:right;color:#85858f;font-size:13px;margin-top:4px}
+.collection-submeta{text-align:right;color:#85858f;font-size:13px;margin:8px 0 18px}.collection-tools{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px}.collection-tools button{width:auto;white-space:nowrap;flex-shrink:0;border-radius:22px;padding:11px 15px;margin:0;background:linear-gradient(#292930,#1c1c22);border:1px solid #33333b;color:#bdbdc5}.collection-tools button.active{background:#0866ce;color:white;border-color:#0866ce}.collection-search{width:100%;padding:15px 16px;border-radius:16px;border:1px solid #292932;background:#1b1b22;color:#fff;font-size:16px}.collection-list{margin-top:14px}.collection-empty{min-height:35vh;display:flex;align-items:center;justify-content:center;text-align:center;color:#777780;font-size:18px}
 .balance-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;margin:0 0 12px;border:1px solid #655a2d;border-radius:15px;background:linear-gradient(135deg,#302a19,#171827);font-weight:700}
 .balance-label{color:#b8bcd0;font-size:13px}.balance-amount{color:#ffcf62;font-size:23px;font-variant-numeric:tabular-nums}
 .sell-button{background:linear-gradient(135deg,#159c69,#087b59)}.inventory-open{margin:0 0 16px;background:linear-gradient(135deg,#16a085,#087f8c)}
@@ -23,18 +26,25 @@
 <header><div style="font-size:38px">☎</div><h1>Phone Generator</h1><p>Генератор демонстрационных телефонных данных</p></header>
 <div class="balance-bar"><span class="balance-label">💰 ТВОЙ БАЛАНС</span><span class="balance-amount" id="balanceDisplay">€100.00</span></div>
 <button class="inventory-open" id="openInventory">🎒 Открыть инвентарь <span id="inventoryCount">0</span></button>
-<section class="inventory-box" id="inventoryBox" aria-label="Инвентарь">
-  <div class="inventory-top"><h2>🎒 Мой инвентарь</h2><button class="secondary small-button" id="closeInventory">Закрыть</button></div>
+<section class="collection-screen" id="inventoryBox" aria-label="Коллекция">
+  <div class="collection-head"><button class="back-collection" id="closeInventory" aria-label="Назад">‹</button><div class="collection-title">Коллекция</div><div><div class="collection-money" id="collectionBalance">€100.00</div><div class="collection-meta" id="collectionCount">0 / 50</div></div></div>
+  <div class="collection-submeta">Стоимость коллекции <span id="collectionValue">€0.00</span></div>
+  <div class="collection-tools"><button id="filterCollection">Фильтры</button><button id="sortDate" class="active">Дата ▼</button><button id="sortPrice">Цена</button><button id="sortRarity">Редкость</button><button id="sortAlpha">А–Я</button></div>
+  <input class="collection-search" id="searchCollection" placeholder="Поиск номера" aria-label="Поиск номера">
+  <div class="collection-list" id="inventoryItems"><div class="collection-empty">Пока пусто — крути номера</div></div>
+  <button class="secondary" id="copyInventory">Копировать коллекцию</button>
+  <button class="sell-button" id="sellAll">💰 Продать все номера</button>
+  <button class="secondary" id="clearInventory">Очистить инвентарь</button>
+</section>
+<section class="inventory-box" id="oldInventoryBox" aria-label="Инвентарь (старое меню)">
+  <div class="inventory-top"><h2>🎒 Мой инвентарь</h2></div>
   <p class="muted">Собирай красивые номера и храни коллекцию на этом устройстве.</p>
   <div class="inventory-stats">
     <div class="inventory-stat"><strong id="invTotal">0</strong><span>Номеров</span></div>
     <div class="inventory-stat"><strong id="invRare">0</strong><span>Редких+</span></div>
     <div class="inventory-stat"><strong id="invValue">€0</strong><span>Условная цена</span></div>
   </div>
-  <button class="secondary" id="copyInventory">Копировать коллекцию</button>
-  <button class="sell-button" id="sellAll">💰 Продать все номера</button>
-  <button class="secondary" id="clearInventory">Очистить инвентарь</button>
-  <div id="inventoryItems"><div class="empty">Инвентарь пока пуст.</div></div>
+  <div id="oldInventoryItems"></div>
 </section>
 <section class="panel">
 <label for="country">Страна / код</label>
@@ -60,6 +70,7 @@ const amount=document.getElementById('amount');
 const results=document.getElementById('results');
 const count=document.getElementById('count');
 const saveStatus=document.getElementById('saveStatus');
+let collectionSort='date';
 const STORAGE_KEY='phoneGeneratorSavedState_v1';
 function saveState(){
   try{
@@ -172,11 +183,21 @@ function addToInventory(entry){
 }
 function renderInventory(){
   const list=document.getElementById('inventoryItems');list.replaceChildren();
+  document.getElementById('collectionBalance').textContent='€'+balance.toFixed(2);
+  document.getElementById('collectionCount').textContent=inventory.length+' / 50';
+  document.getElementById('collectionValue').textContent='€'+inventory.reduce((sum,n)=>sum+Number(n.price||0),0).toFixed(2);
+  let shown=inventory.map((entry,index)=>({...entry,_index:index}));
+  const query=(document.getElementById('searchCollection')?.value||'').trim().toLowerCase();
+  if(query)shown=shown.filter(n=>n.number.toLowerCase().includes(query));
+  if(collectionSort==='price')shown.sort((a,b)=>Number(b.price||0)-Number(a.price||0));
+  if(collectionSort==='rarity'){const order={'Легендарный':5,'Эпический':4,'Редкий':3,'Необычный':2,'Обычный':1};shown.sort((a,b)=>(order[b.rarity]||0)-(order[a.rarity]||0));}
+  if(collectionSort==='alpha')shown.sort((a,b)=>a.number.localeCompare(b.number));
   document.getElementById('inventoryCount').textContent='('+inventory.length+')';
   document.getElementById('invTotal').textContent=inventory.length;
   document.getElementById('invRare').textContent=inventory.filter(n=>['Редкий','Эпический','Легендарный'].includes(n.rarity)).length;
   document.getElementById('invValue').textContent='€'+inventory.reduce((sum,n)=>sum+Number(n.price||0),0).toFixed(2);
-  inventory.forEach((entry,index)=>{
+  shown.forEach((entry)=>{
+    const index=entry._index;
     const row=document.createElement('div');row.className='inventory-item';
     const info=document.createElement('div');info.className='number-info';
     const number=document.createElement('span');number.textContent=entry.number;
@@ -189,10 +210,17 @@ function renderInventory(){
     const remove=document.createElement('button');remove.className='secondary';remove.textContent='Убрать';remove.addEventListener('click',()=>{if(!confirm('Убрать номер без получения денег?'))return;inventory.splice(index,1);renderInventory();render();saveState();});
     actions.append(copy,sell,remove);row.append(info,actions);list.append(row);
   });
-  if(!inventory.length)list.innerHTML='<div class="empty">Инвентарь пока пуст. Добавь номер кнопкой «+ В инвентарь».</div>';
+  if(!shown.length)list.innerHTML='<div class="collection-empty">'+(inventory.length?'Ничего не найдено':'Пока пусто — крути номера')+'</div>';
 }
-document.getElementById('openInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.add('open'));
+document.getElementById('openInventory').addEventListener('click',()=>{document.getElementById('inventoryBox').classList.add('open');renderInventory();});
 document.getElementById('closeInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.remove('open'));
+document.getElementById('searchCollection').addEventListener('input',renderInventory);
+function setCollectionSort(sort,label){collectionSort=sort;document.querySelectorAll('.collection-tools button').forEach(b=>b.classList.remove('active'));document.getElementById(label).classList.add('active');renderInventory();}
+document.getElementById('sortDate').addEventListener('click',()=>setCollectionSort('date','sortDate'));
+document.getElementById('sortPrice').addEventListener('click',()=>setCollectionSort('price','sortPrice'));
+document.getElementById('sortRarity').addEventListener('click',()=>setCollectionSort('rarity','sortRarity'));
+document.getElementById('sortAlpha').addEventListener('click',()=>setCollectionSort('alpha','sortAlpha'));
+document.getElementById('filterCollection').addEventListener('click',()=>{const choices=['Все','Редкие и выше','Легендарные'];const choice=prompt('Фильтр коллекции: 1 — Все, 2 — Редкие и выше, 3 — Легендарные','1');if(!choice)return;const input=document.getElementById('searchCollection');if(choice==='2')input.value='';renderInventory();if(choice==='2'||choice==='3'){const list=document.getElementById('inventoryItems');const order={'Легендарный':5,'Эпический':4,'Редкий':3,'Необычный':2,'Обычный':1};[...list.children].forEach(el=>{const text=el.querySelector('.rarity')?.textContent||'';el.style.display=choice==='2'?(order[text]||0)>=3?'flex':'none':text==='Легендарный'?'flex':'none';});}});
 document.getElementById('copyInventory').addEventListener('click',()=>{if(!inventory.length){alert('Инвентарь пока пуст.');return;}copyText(inventory.map(n=>n.number+' — '+n.rarity+' — €'+Number(n.price||0).toFixed(2)).join('\n'));});
 document.getElementById('sellAll').addEventListener('click',sellAll);
 document.getElementById('clearInventory').addEventListener('click',()=>{if(!inventory.length)return;if(!confirm('Удалить все номера из инвентаря?'))return;inventory=[];renderInventory();render();saveState();});
