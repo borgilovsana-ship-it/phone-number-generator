@@ -167,7 +167,7 @@ function renderInventory(){
 }
 document.getElementById('openInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.add('open'));
 document.getElementById('closeInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.remove('open'));
-document.getElementById('copyInventory').addEventListener('click',()=>{if(!inventory.length){alert('Инвентарь пока пуст.');return;}copyText(inventory.map(n=>n.number+' — '+n.rarity+' — €'+Number(n.price||0).toFixed(2)).join('\\n'));});
+document.getElementById('copyInventory').addEventListener('click',()=>{if(!inventory.length){alert('Инвентарь пока пуст.');return;}copyText(inventory.map(n=>n.number+' — '+n.rarity+' — €'+Number(n.price||0).toFixed(2)).join('\n'));});
 document.getElementById('clearInventory').addEventListener('click',()=>{if(!inventory.length)return;if(!confirm('Удалить все номера из инвентаря?'))return;inventory=[];renderInventory();render();saveState();});
 document.getElementById('generate').addEventListener('click',generate);
 document.getElementById('clearSaved').addEventListener('click',()=>{
