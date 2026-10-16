@@ -19,6 +19,8 @@
 <select id="amount"><option value="1">1 результат</option><option value="10" selected>10 результатов</option><option value="50">50 результатов</option><option value="100">100 результатов</option></select>
 <button id="generate">✦ Сгенерировать</button>
 <button class="secondary" id="copyAll">Копировать весь список</button>
+<p class="note" id="saveStatus" role="status">Сохранение включено: результаты сохраняются автоматически на этом устройстве.</p>
+<button class="secondary" id="clearSaved">Очистить сохранённые результаты</button>
 <div class="results-head"><h2>Результаты</h2><span class="muted" id="count">0</span></div>
 <div id="results"><div class="empty">Нажми «Сгенерировать», чтобы начать.</div></div>
 <p class="note">Важно: отображаются все цифры, но номера генерируются случайно и не проверяются. Это демонстрационные данные — они могут случайно совпасть с реальными номерами; не используй их для звонков или SMS.</p>
@@ -31,6 +33,24 @@ const country=document.getElementById('country');
 const amount=document.getElementById('amount');
 const results=document.getElementById('results');
 const count=document.getElementById('count');
+const saveStatus=document.getElementById('saveStatus');
+const STORAGE_KEY='phoneGeneratorSavedState_v1';
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({numbers,country:country.value,amount:amount.value}));
+    saveStatus.textContent='✓ Результаты сохранены автоматически на этом устройстве.';
+  }catch(e){saveStatus.textContent='Не удалось сохранить данные в браузере.';}
+}
+function loadState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if(!saved)return;
+    if(saved.country && [...country.options].some(o=>o.value===saved.country))country.value=saved.country;
+    if(saved.amount && [...amount.options].some(o=>o.value===saved.amount))amount.value=saved.amount;
+    if(Array.isArray(saved.numbers))numbers=saved.numbers.filter(n=>typeof n==='string').slice(0,100);
+    if(numbers.length)render();
+  }catch(e){saveStatus.textContent='Не удалось загрузить сохранённые данные.';}
+}
 function generate(){
   const code=country.value;
   const qty=Number(amount.value);
@@ -41,6 +61,7 @@ function generate(){
     numbers.push(code+' '+digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6));
   }
   render();
+  saveState();
 }
 function render(){
   results.replaceChildren();
@@ -52,6 +73,7 @@ function render(){
     btn.addEventListener('click',()=>copyText(number));
     row.append(value,btn);results.append(row);
   });
+  if(numbers.length===0)results.innerHTML='<div class="empty">Сохранённых результатов нет.</div>';
 }
 async function copyText(text){
   try{
@@ -64,6 +86,14 @@ async function copyText(text){
   }
 }
 document.getElementById('generate').addEventListener('click',generate);
+document.getElementById('clearSaved').addEventListener('click',()=>{
+  if(!confirm('Удалить сохранённые результаты с этого устройства?'))return;
+  numbers=[];
+  try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+  render();
+  saveStatus.textContent='Сохранённые результаты удалены.';
+});
+loadState();
 document.getElementById('copyAll').addEventListener('click',()=>{
   if(!numbers.length){alert('Сначала сгенерируй результаты.');return;}
   copyText(numbers.join('\n'));
