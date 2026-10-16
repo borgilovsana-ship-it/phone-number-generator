@@ -52,7 +52,7 @@ function loadState(){
   }catch(e){saveStatus.textContent='Не удалось загрузить сохранённые данные.';}
 }
 function rateNumber(number){
-  const digits=number.replace(/^\\+\\d+\\s*/, '').replace(/\\D/g,'');
+  const digits=number.replace(/^\+\d+\s*/, '').replace(/\D/g,'');
   let score=0;
   // Оцениваем повторы, одинаковые соседние цифры и последовательности.
   const freq={}; for(const d of digits)freq[d]=(freq[d]||0)+1;
@@ -64,7 +64,7 @@ function rateNumber(number){
     if(Math.abs(diff)===1){run++;longest=Math.max(longest,run);}else run=1;
   }
   if(longest>=5)score+=4; else if(longest>=4)score+=2;
-  if(/(\\d)\\1{2,}/.test(digits))score+=2;
+  if(/(\d)\1{2,}/.test(digits))score+=2;
   if(digits===digits.split('').reverse().join(''))score+=4;
   if(new Set(digits).size===digits.length)score+=1;
   let rarity,price,color;
