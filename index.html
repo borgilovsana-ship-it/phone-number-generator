@@ -1,268 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b0d16">
-<title>Phone Generator</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101014">
+<title>Phone Tap — Генератор номеров</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:24px 16px;min-height:100vh;background:radial-gradient(ellipse at top,#20204a 0,#0b0d16 55%);color:#f4f5ff;font-family:system-ui,Arial,sans-serif}main{max-width:620px;margin:auto}header{text-align:center;padding:12px 0 20px}h1{font-size:clamp(28px,7vw,40px);margin:8px 0;color:#a99dff}header p,.muted{color:#a9aec5;line-height:1.5}.panel{background:#151827eF;border:1px solid #30354e;border-radius:20px;padding:20px;box-shadow:0 18px 55px #0005}label{display:block;margin:16px 0 8px;font-weight:650}select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #414762;background:#0e1120;color:white;font-size:16px}button{background:linear-gradient(135deg,#7665ff,#5545d8);border:0;font-weight:750;margin-top:14px;cursor:pointer}button.secondary{background:#282e45;border:1px solid #414762}button:active{transform:scale(.99)}.note{font-size:13px;color:#a9aec5;line-height:1.5;margin-top:18px}.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}.results-head h2{font-size:18px}.number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:9px;background:#20243a;border:1px solid #303650;border-radius:12px}.number span{font-family:ui-monospace,monospace;overflow-wrap:anywhere}.number-info{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}.rarity{font:700 12px system-ui,Arial,sans-serif;letter-spacing:.2px}.price{font:700 14px system-ui,Arial,sans-serif;color:#ffcf62}.number button{width:auto;flex-shrink:0;margin:0;padding:9px 12px;font-size:13px}.empty{color:#a9aec5;text-align:center;padding:18px 0}.footer{text-align:center;color:#747c98;font-size:12px;margin:18px 0}
-.menu-button{display:block;margin:0 0 14px;background:linear-gradient(135deg,#2457a6,#12336a);border:1px solid #5577b7}.drop-reveal{display:none;margin-top:16px;padding:16px 10px;border-radius:14px;background:#0b1223;border:1px solid #425e91;overflow-wrap:anywhere}.drop-reveal.show{display:block;animation:tap-pop .35s ease}.drop-number{font-size:clamp(19px,5vw,27px);font-weight:900;color:#fff;margin:8px 0}.drop-rarity{font-weight:800;font-size:15px}.drop-price{color:#ffcf62;font-size:17px;font-weight:800;margin-top:5px}.tap-machine{margin:16px 0;padding:20px 14px;text-align:center;border:1px solid #425e91;border-radius:18px;background:radial-gradient(ellipse at top,#23477d,#121a30 70%);box-shadow:0 0 24px #176bd333}.tap-machine-icon{font-size:54px;filter:drop-shadow(0 4px 10px #0008)}.tap-machine-title{font-size:21px;font-weight:900;letter-spacing:1px;margin:8px 0;color:#e8efff}.tap-machine p{font-size:13px;color:#b7c5df;line-height:1.5}.tap-button{min-height:70px;font-size:17px;background:linear-gradient(135deg,#2588ff,#1351ba);box-shadow:0 5px 0 #0a3479,0 0 18px #328aff55;touch-action:manipulation}.tap-button.tapped{animation:tap-pop .24s ease}.tap-count{margin-top:15px;color:#b7c5df;font-size:13px}.tap-count strong{color:#fff;font-size:18px}@keyframes tap-pop{50%{transform:scale(.96);filter:brightness(1.3)}}.menu-screen{display:none;margin-bottom:16px;background:#101015;border-radius:18px;padding:16px;min-height:85vh}.menu-screen.open{display:block}.menu-title-row{display:flex;align-items:center;gap:14px;margin:8px 0 22px}.menu-back{width:42px;margin:0;padding:4px;background:transparent;font-size:32px}.menu-title{font-size:30px;font-weight:800}.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.menu-card{display:flex;flex-direction:column;justify-content:flex-end;min-height:150px;overflow:hidden;border-radius:17px;border:1px solid #53648d;background:linear-gradient(145deg,#244c8e,#10264d,#071021);padding:0;text-align:left}.menu-card.wide{grid-column:1/-1;min-height:170px}.menu-card-art{display:flex;align-items:center;justify-content:center;flex:1;min-height:100px;color:#e8efff;font-size:28px;font-weight:900}.menu-card-label{width:100%;padding:7px 10px;background:#070d1f;color:#f3f5ff;font-size:13px;font-weight:800}.collection-screen{display:none;margin:0 0 16px;background:#101015;border:1px solid #24242d;border-radius:20px;padding:16px;min-height:70vh}
-.collection-screen.open{display:block}.collection-head{display:flex;align-items:center;gap:12px}.back-collection{width:42px;flex-shrink:0;margin:0;padding:8px;background:transparent;font-size:26px}.collection-title{font-size:25px;font-weight:750;flex:1}.collection-money{text-align:right;color:#f1f1f5;font-size:22px;font-weight:750}.collection-meta{text-align:right;color:#85858f;font-size:13px;margin-top:4px}
-.collection-submeta{text-align:right;color:#85858f;font-size:13px;margin:8px 0 18px}.collection-tools{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px}.collection-tools button{width:auto;white-space:nowrap;flex-shrink:0;border-radius:22px;padding:11px 15px;margin:0;background:linear-gradient(#292930,#1c1c22);border:1px solid #33333b;color:#bdbdc5}.collection-tools button.active{background:#0866ce;color:white;border-color:#0866ce}.collection-search{width:100%;padding:15px 16px;border-radius:16px;border:1px solid #292932;background:#1b1b22;color:#fff;font-size:16px}.collection-list{margin-top:14px}.collection-empty{min-height:35vh;display:flex;align-items:center;justify-content:center;text-align:center;color:#777780;font-size:18px}
-.balance-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;margin:0 0 12px;border:1px solid #655a2d;border-radius:15px;background:linear-gradient(135deg,#302a19,#171827);font-weight:700}
-.balance-label{color:#b8bcd0;font-size:13px}.balance-amount{color:#ffcf62;font-size:23px;font-variant-numeric:tabular-nums}
-.sell-button{background:linear-gradient(135deg,#159c69,#087b59)}.inventory-open{margin:0 0 16px;background:linear-gradient(135deg,#16a085,#087f8c)}
-.inventory-box{display:none;margin:0 0 18px;background:#111827;border:1px solid #3a4562;border-radius:18px;padding:16px}
-.inventory-box.open{display:block}.inventory-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.inventory-top h2{margin:0;font-size:21px}.inventory-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
-.inventory-stat{background:#20243a;border:1px solid #303650;border-radius:12px;padding:10px;text-align:center}.inventory-stat strong{display:block;font-size:19px;color:#a99dff}.inventory-stat span{font-size:11px;color:#a9aec5}
-.inventory-item{padding:12px;margin-top:8px;border:1px solid #303650;background:#20243a;border-radius:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
-.inventory-item .number-info{overflow:hidden}.inventory-actions{display:flex;flex-direction:column;gap:6px}.inventory-actions button{width:auto;margin:0;padding:8px 10px;font-size:12px}.small-button{width:auto!important;margin:0!important;padding:9px 12px!important;font-size:13px!important}
+:root{color-scheme:dark;--bg:#101014;--panel:#1b1b22;--muted:#777783;--line:#303039;--blue:#3b3b49;--gold:#ffcf62}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#f5f5f7;font-family:Arial,system-ui,sans-serif}body{min-height:100dvh}button,select,input{font:inherit}button{cursor:pointer;color:#f7f7fb;border:1px solid #34343d;background:#222229;border-radius:10px;padding:12px}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}
+.app{width:min(100%,520px);min-height:100dvh;margin:auto;position:relative;padding:12px 14px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column}.top{display:flex;align-items:center;justify-content:space-between;min-height:42px}.iconbtn{width:38px;height:38px;padding:0;border-radius:11px;background:#24242b;color:#aaa;font-size:19px}.topright{display:flex;align-items:center;gap:10px;color:#aaa;font-size:11px}.online{width:7px;height:7px;background:#38d879;border-radius:50%;box-shadow:0 0 8px #38d879}.balance{font-weight:800;font-size:12px;font-variant-numeric:tabular-nums}.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:390px;padding:28px 0}.hint{font-size:10px;color:#62626e;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}.number-shell{width:min(100%,330px);padding:10px 11px 8px;background:linear-gradient(180deg,#34343b,#17171c);border:1px solid #55555d;border-radius:5px;box-shadow:0 12px 45px #0008;transform:translateZ(0)}.number-top{display:flex;justify-content:space-between;color:#777781;font-size:9px;letter-spacing:.5px;margin:0 1px 7px}.number-plate{position:relative;display:flex;align-items:center;justify-content:center;min-height:58px;background:linear-gradient(#f5f5f2,#d9d9d7);border:2px solid #a7a7a5;border-radius:2px;color:#17171a;font-family:Arial,sans-serif;font-size:clamp(22px,7vw,32px);font-weight:900;letter-spacing:1px;text-shadow:0 1px #fff;white-space:nowrap}.number-plate .flag{position:absolute;right:0;top:0;bottom:0;width:35px;border-left:1px solid #9b9b98;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;letter-spacing:0;color:#222}.number-plate .flag b{font-size:14px}.number-plate .flag small{font-size:7px}.plate-value{padding-right:32px}.drop-details{text-align:center;margin-top:17px;min-height:47px}.rarity{font-weight:800;font-size:13px}.worth{font-size:11px;color:#777783;margin-top:5px}.tap-area{width:100%;padding-bottom:10px}.tapbtn{width:100%;border:1px solid #454551;background:linear-gradient(180deg,#292930,#1b1b20);font-size:13px;font-weight:800;letter-spacing:.4px;padding:17px 12px;box-shadow:0 4px 0 #0a0a0c}.tapbtn .sub{display:block;color:#858590;font-size:10px;font-weight:500;margin-top:5px;letter-spacing:0}.tapbtn.pulse{animation:pulse .3s ease}@keyframes pulse{50%{transform:scale(.97);filter:brightness(1.45)}}.bottomstats{display:flex;justify-content:space-between;color:#777783;font-size:10px;padding:15px 2px 3px}.bottomstats b{color:#d9d9df;font-size:11px}.screen{display:none;position:absolute;inset:0;z-index:5;background:#101014;padding:16px 14px calc(20px + env(safe-area-inset-bottom));overflow:auto}.screen.open{display:block}.screenhead{display:flex;align-items:center;gap:12px;margin:8px 0 22px}.back{font-size:25px;width:40px;height:40px;padding:0}.screenhead h2{font-size:24px;margin:0}.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{min-height:118px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(145deg,#22222b,#141419);border-color:#30303a;padding:13px}.tile-art{font-size:23px;font-weight:900;color:#b5b5c1;align-self:center;margin:auto}.tile span:last-child{font-size:11px;font-weight:800;letter-spacing:.4px}.tile.wide{grid-column:1/-1;min-height:100px}.summary{display:flex;gap:8px;margin:0 0 15px}.stat{flex:1;background:#1c1c23;border:1px solid #303039;border-radius:10px;padding:12px}.stat b{display:block;font-size:18px;margin-bottom:5px}.stat small{font-size:10px;color:#858590}.list{display:flex;flex-direction:column;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1b1b22;border:1px solid #303039;padding:12px;border-radius:10px}.itemtext{min-width:0}.itemtext strong{display:block;font-size:15px;overflow-wrap:anywhere}.itemtext small{display:block;color:#858590;margin-top:5px;font-size:11px}.item button{padding:8px 10px;font-size:11px;flex-shrink:0}.primary{background:#285da8;border-color:#3976ca}.green{background:#146b4c;border-color:#248d69}.muted{color:#858590;font-size:12px;line-height:1.5}.field{width:100%;background:#1c1c23;color:#fff;border:1px solid #303039;padding:13px;border-radius:10px;margin:8px 0 14px}.widebtn{width:100%;margin-top:9px}.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#292932;border:1px solid #474752;padding:10px 15px;border-radius:12px;font-size:12px;z-index:20;display:none;max-width:90vw;text-align:center}.toast.show{display:block}
 </style>
 </head>
-<body>
-<main>
-<header><div style="font-size:38px">☎</div><h1>Phone Generator</h1><p>Генератор демонстрационных телефонных данных</p></header><button id="menuButton" class="menu-button">☰ Меню</button><section id="mainMenu" class="menu-screen open"><div class="menu-title-row"><button class="menu-back" id="menuBack">‹</button><div class="menu-title">Меню</div></div><div class="menu-grid"><button class="menu-card wide" data-screen="generator"><div class="menu-card-art">+49 151 23456789</div><div class="menu-card-label">ГЕНЕРАТОР</div></button><button class="menu-card wide" data-screen="daily"><div class="menu-card-art">+49 *** *** 789</div><div class="menu-card-label">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</div></button><button class="menu-card" data-screen="collection"><div class="menu-card-art">+49 151 23456789</div><div class="menu-card-label">КОЛЛЕКЦИЯ</div></button><button class="menu-card" data-screen="safe"><div class="menu-card-art">SAFE</div><div class="menu-card-label">СЕЙФ</div></button><button class="menu-card" data-screen="garage"><div class="menu-card-art">GARAGE</div><div class="menu-card-label">ГАРАЖ</div></button><button class="menu-card" data-screen="sale"><div class="menu-card-art">SALE</div><div class="menu-card-label">АВТОПРОДАЖА</div></button><button class="menu-card" data-screen="upgrades"><div class="menu-card-art">UPGRADE</div><div class="menu-card-label">УЛУЧШЕНИЯ</div></button><button class="menu-card" data-screen="rarities"><div class="menu-card-art">RARE</div><div class="menu-card-label">КАТАЛОГ РЕДКОСТЕЙ</div></button><button class="menu-card" data-screen="stats"><div class="menu-card-art">STATS</div><div class="menu-card-label">СТАТИСТИКА</div></button><button class="menu-card" data-screen="theme"><div class="menu-card-art">THEME</div><div class="menu-card-label">ТЕМА</div></button></div></section>
-<div class="balance-bar"><span class="balance-label">💰 ТВОЙ БАЛАНС</span><span class="balance-amount" id="balanceDisplay">€100.00</span></div>
-<button class="inventory-open" id="openInventory">🎒 Открыть инвентарь <span id="inventoryCount">0</span></button>
-<section class="collection-screen" id="inventoryBox" aria-label="Коллекция">
-  <div class="collection-head"><button class="back-collection" id="closeInventory" aria-label="Назад">‹</button><div class="collection-title">Коллекция</div><div><div class="collection-money" id="collectionBalance">€100.00</div><div class="collection-meta" id="collectionCount">0 / 50</div></div></div>
-  <div class="collection-submeta">Стоимость коллекции <span id="collectionValue">€0.00</span></div>
-  <div class="collection-tools"><button id="filterCollection">Фильтры</button><button id="sortDate" class="active">Дата ▼</button><button id="sortPrice">Цена</button><button id="sortRarity">Редкость</button><button id="sortAlpha">А–Я</button></div>
-  <input class="collection-search" id="searchCollection" placeholder="Поиск номера" aria-label="Поиск номера">
-  <div class="collection-list" id="inventoryItems"><div class="collection-empty">Пока пусто — крути номера</div></div>
-  <button class="secondary" id="copyInventory">Копировать коллекцию</button>
-  <button class="sell-button" id="sellAll">💰 Продать все номера</button>
-  <button class="secondary" id="clearInventory">Очистить инвентарь</button>
-</section>
-<section class="inventory-box" id="oldInventoryBox" aria-label="Инвентарь (старое меню)">
-  <div class="inventory-top"><h2>🎒 Мой инвентарь</h2></div>
-  <p class="muted">Собирай красивые номера и храни коллекцию на этом устройстве.</p>
-  <div class="inventory-stats">
-    <div class="inventory-stat"><strong id="invTotal">0</strong><span>Номеров</span></div>
-    <div class="inventory-stat"><strong id="invRare">0</strong><span>Редких+</span></div>
-    <div class="inventory-stat"><strong id="invValue">€0</strong><span>Условная цена</span></div>
-  </div>
-  <div id="oldInventoryItems"></div>
-</section>
-<section class="panel" id="generatorPanel">
-<label for="country">Страна / код</label>
-<select id="country"><option value="+49">Германия (+49)</option><option value="+7">Россия (+7)</option><option value="+1">США (+1)</option><option value="+44">Великобритания (+44)</option><option value="+33">Франция (+33)</option><option value="+34">Испания (+34)</option><option value="+39">Италия (+39)</option><option value="+81">Япония (+81)</option></select>
-<div class="tap-machine"><div class="tap-machine-icon">📱</div><div class="tap-machine-title">ТЕЛЕФОННЫЙ КЕЙС</div><p>Нажми, чтобы потратить €150 и выбить случайный номер телефона</p><div class="tap-count">Стоимость попытки: <strong>€150</strong></div><button id="generate" class="tap-button">📱 ОТКРЫТЬ КЕЙС · €150</button><div id="dropReveal" class="drop-reveal" aria-live="polite"></div><div class="tap-count">Выбито номеров: <strong id="tapCount">0</strong></div></div>
-<button class="secondary" id="copyAll">Копировать весь список</button>
-<p class="note" id="saveStatus" role="status">Сохранение включено: результаты сохраняются автоматически на этом устройстве.</p>
-<button class="secondary" id="clearSaved">Очистить сохранённые результаты</button>
-<div class="results-head"><h2>Результаты</h2><span class="muted" id="count">0</span></div>
-<div id="results"><div class="empty">Нажми «Сгенерировать», чтобы начать.</div></div>
-<p class="note">Цены в евро — условная игровая оценка по красивым комбинациям цифр, а не реальная рыночная стоимость. Номера случайные, не проверяются и могут совпасть с реальными; не используй их для звонков или SMS.</p>
-</section>
-<div class="footer">Phone Generator · работает прямо в браузере</div>
+<body><main class="app">
+<header class="top"><button class="iconbtn" id="menuBtn" aria-label="Открыть меню">☰</button><div class="topright"><span class="balance" id="balance">€500</span><span class="online"></span></div></header>
+<section class="stage" id="gameStage"><div class="hint">ТЕБЕ ВЫПАЛ НОМЕР</div><div class="number-shell"><div class="number-top"><span>PHONE COLLECTION</span><span id="serial">#000001</span></div><div class="number-plate"><span class="plate-value" id="phoneNumber">+49 151 234 56 78</span><span class="flag"><b>☎</b><small id="countryTag">DE</small></span></div></div><div class="drop-details"><div class="rarity" id="rarity">Обычный номер</div><div class="worth" id="worth">Стоимость: €5</div></div></section>
+<section class="tap-area"><button class="tapbtn" id="tapBtn">ТАПНИ, ЧТОБЫ ВЫБИТЬ НОМЕР<span class="sub" id="costLabel">Стоимость попытки: €10</span></button><div class="bottomstats"><span>ВЫБИТО: <b id="totalDrops">0</b></span><span>В КОЛЛЕКЦИИ: <b id="ownedCount">0</b></span></div></section>
+<section class="screen" id="menuScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Меню</h2></div><div class="menu-grid">
+<button class="tile wide" data-open="game"><span class="tile-art">+49 151 234 56 78</span><span>ТЕЛЕФОННЫЙ КЕЙС</span></button>
+<button class="tile" data-open="collection"><span class="tile-art">▤</span><span>КОЛЛЕКЦИЯ</span></button><button class="tile" data-open="shop"><span class="tile-art">↗</span><span>МАГАЗИН</span></button>
+<button class="tile" data-open="upgrades"><span class="tile-art">✦</span><span>УЛУЧШЕНИЯ</span></button><button class="tile" data-open="tasks"><span class="tile-art">✓</span><span>ЗАДАНИЯ</span></button>
+<button class="tile" data-open="stats"><span class="tile-art">▥</span><span>СТАТИСТИКА</span></button><button class="tile" data-open="settings"><span class="tile-art">⚙</span><span>НАСТРОЙКИ</span></button>
+</div></section>
+<section class="screen" id="collectionScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Коллекция</h2></div><div class="summary"><div class="stat"><b id="colCount">0</b><small>Номеров</small></div><div class="stat"><b id="colValue">€0</b><small>Общая стоимость</small></div></div><input class="field" id="search" placeholder="Поиск номера"><div class="list" id="collectionList"></div><button class="widebtn green" id="sellAll">Продать всё</button></section>
+<section class="screen" id="shopScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Магазин</h2></div><p class="muted">Получай игровые деньги, чтобы открывать больше телефонных кейсов.</p><div class="item"><div class="itemtext"><strong>Небольшой бонус</strong><small>+€100 игровых денег</small></div><button class="primary" id="bonusBtn">Получить</button></div><div class="item"><div class="itemtext"><strong>Большой бонус</strong><small>+€500 игровых денег</small></div><button class="primary" id="bigBonusBtn">Получить</button></div><p class="muted">Это виртуальная игровая валюта, не настоящие деньги.</p></section>
+<section class="screen" id="upgradesScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Улучшения</h2></div><div class="item"><div class="itemtext"><strong>Удача I</strong><small>Повышает шанс редких номеров · €250</small></div><button class="primary" id="luckBtn">Купить</button></div><p class="muted" id="luckStatus">Уровень удачи: 0</p></section>
+<section class="screen" id="tasksScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Задания</h2></div><div class="item"><div class="itemtext"><strong>Первый тап</strong><small>Выбей один номер и забери награду €50</small></div><button class="primary" id="taskOne">Забрать</button></div><div class="item"><div class="itemtext"><strong>Коллекционер</strong><small>Собери 5 номеров · награда €150</small></div><button class="primary" id="taskFive">Забрать</button></div></section>
+<section class="screen" id="statsScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Статистика</h2></div><div class="summary"><div class="stat"><b id="statsDrops">0</b><small>Всего выбито</small></div><div class="stat"><b id="statsRare">0</b><small>Редких+</small></div></div><p class="muted">Случайные демонстрационные номера для игры. Не используй их для звонков или SMS.</p></section>
+<section class="screen" id="settingsScreen"><div class="screenhead"><button class="back" data-close>‹</button><h2>Настройки</h2></div><label class="muted" for="country">Код страны для новых номеров</label><select class="field" id="country"><option value="+49">Германия (+49)</option><option value="+7">Россия (+7)</option><option value="+1">США (+1)</option><option value="+44">Великобритания (+44)</option><option value="+33">Франция (+33)</option><option value="+34">Испания (+34)</option><option value="+39">Италия (+39)</option><option value="+81">Япония (+81)</option></select><button class="widebtn" id="resetBtn">Сбросить прогресс</button></section>
+<div class="toast" id="toast" role="status"></div>
 </main>
 <script>
-let numbers=[];
-let inventory=[];
-let balance=100;
-const country=document.getElementById('country');
-const amount=document.getElementById('amount');
-const results=document.getElementById('results');
-const count=document.getElementById('count');
-const saveStatus=document.getElementById('saveStatus');
-let collectionSort='date';
-const STORAGE_KEY='phoneGeneratorSavedState_v1';
-function saveState(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({numbers,inventory,balance,country:country.value,amount:amount.value}));
-    saveStatus.textContent='✓ Результаты сохранены автоматически на этом устройстве.';
-  }catch(e){saveStatus.textContent='Не удалось сохранить данные в браузере.';}
-}
-function loadState(){
-  try{
-    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
-    if(!saved)return;
-    if(saved.country && [...country.options].some(o=>o.value===saved.country))country.value=saved.country;
-    if(saved.amount && [...amount.options].some(o=>o.value===saved.amount))amount.value=saved.amount;
-    if(Array.isArray(saved.numbers))numbers=saved.numbers.filter(n=>typeof n==='string'||(n&&typeof n.number==='string')).slice(0,100).map(n=>typeof n==='string'?{number:n,...rateNumber(n)}:n);
-    if(Array.isArray(saved.inventory))inventory=saved.inventory.filter(n=>n&&typeof n.number==='string').slice(0,500);
-    if(Number.isFinite(Number(saved.balance)) && saved.balance>=0)balance=Number(saved.balance);
-    if(numbers.length)render();
-    updateBalance();
-    renderInventory();
-  }catch(e){saveStatus.textContent='Не удалось загрузить сохранённые данные.';}
-}
-function rateNumber(number){
-  const digits=number.replace(/^\+\d+\s*/, '').replace(/\D/g,'');
-  let score=0;
-  // Оцениваем повторы, одинаковые соседние цифры и последовательности.
-  const freq={}; for(const d of digits)freq[d]=(freq[d]||0)+1;
-  const maxRepeat=Math.max(...Object.values(freq));
-  if(maxRepeat>=4)score+=4; else if(maxRepeat===3)score+=2; else if(maxRepeat===2)score+=1;
-  let longest=1,run=1;
-  for(let i=1;i<digits.length;i++){
-    const diff=Number(digits[i])-Number(digits[i-1]);
-    if(Math.abs(diff)===1){run++;longest=Math.max(longest,run);}else run=1;
-  }
-  if(longest>=5)score+=4; else if(longest>=4)score+=2;
-  if(/(\d)\1{2,}/.test(digits))score+=2;
-  if(digits===digits.split('').reverse().join(''))score+=4;
-  if(new Set(digits).size===digits.length)score+=1;
-  let rarity,price,color;
-  if(score>=8){rarity='Легендарный';price=Number((150+Math.random()*850).toFixed(2));color='#ffcf62';}
-  else if(score>=6){rarity='Эпический';price=Number((40+Math.random()*110).toFixed(2));color='#d7a0ff';}
-  else if(score>=4){rarity='Редкий';price=Number((10+Math.random()*30).toFixed(2));color='#7dc8ff';}
-  else if(score>=2){rarity='Необычный';price=Number((2+Math.random()*8).toFixed(2));color='#79dc91';}
-  else {rarity='Обычный';price=Number((0.1+Math.random()*1.9).toFixed(2));color='#b5bdd6';}
-  return {rarity,price,color,score};
-}
-function generate(){
-  const cost=150;
-  if(balance<cost){
-    saveStatus.textContent='Недостаточно денег! Нужно €'+cost.toFixed(2)+', у тебя €'+balance.toFixed(2)+'.';
-    return;
-  }
-  balance=Number((balance-cost).toFixed(2));
-  updateBalance();
-  const code=country.value;
-  let digits='';
-  for(let j=0;j<10;j++)digits+=Math.floor(Math.random()*10);
-  const number=code+' '+digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6);
-  const entry={number,...rateNumber(number)};
-  numbers.unshift(entry);
-  numbers=numbers.slice(0,100);
-  const button=document.getElementById('generate');
-  button.classList.remove('tapped');
-  void button.offsetWidth;
-  button.classList.add('tapped');
-  const tapCount=document.getElementById('tapCount');
-  tapCount.textContent=String((Number(tapCount.textContent)||0)+1);
-  const reveal=document.getElementById('dropReveal');
-  reveal.classList.remove('show');
-  reveal.innerHTML='<div>ТЕБЕ ВЫПАЛ НОМЕР</div><div class="drop-number"></div><div class="drop-rarity"></div><div class="drop-price"></div><button type="button" class="secondary" id="addDrop">＋ В коллекцию</button>';
-  reveal.querySelector('.drop-number').textContent=entry.number;
-  reveal.querySelector('.drop-rarity').textContent=entry.rarity;
-  reveal.querySelector('.drop-rarity').style.color=entry.color||'#fff';
-  reveal.querySelector('.drop-price').textContent='Игровая стоимость: €'+entry.price.toFixed(2);
-  reveal.classList.add('show');
-  reveal.querySelector('#addDrop').addEventListener('click',()=>addToInventory(entry));
-  render();
-  saveState();
-  saveStatus.textContent='Вы потратили €'+cost.toFixed(2)+'. Выпал '+entry.rarity+' номер.';
-}
-function render(){
-  results.replaceChildren();
-  count.textContent=numbers.length+' шт.';
-  numbers.forEach(item=>{
-    const entry=typeof item==='string'?{number:item,...rateNumber(item)}:item;
-    const row=document.createElement('div');row.className='number';
-    const info=document.createElement('div');info.className='number-info';
-    const value=document.createElement('span');value.textContent=entry.number;
-    const rarity=document.createElement('div');rarity.className='rarity';rarity.textContent=entry.rarity;rarity.style.color=entry.color||'#b5bdd6';
-    const price=document.createElement('div');price.className='price';price.textContent='€'+Number(entry.price||0).toFixed(2);
-    info.append(value,rarity,price);
-    const actions=document.createElement('div');actions.className='inventory-actions';
-    const btn=document.createElement('button');btn.className='secondary';btn.textContent='Копировать';
-    btn.addEventListener('click',()=>copyText(entry.number));
-    const add=document.createElement('button');add.textContent=inventory.some(n=>n.number===entry.number)?'✓ В инвентаре':'+ В инвентарь';add.className=inventory.some(n=>n.number===entry.number)?'secondary':'';add.disabled=inventory.some(n=>n.number===entry.number);
-    add.addEventListener('click',()=>addToInventory(entry));
-    actions.append(btn,add);row.append(info,actions);results.append(row);
-  });
-  if(numbers.length===0)results.innerHTML='<div class="empty">Сохранённых результатов нет.</div>';
-}
-async function copyText(text){
-  try{
-    await navigator.clipboard.writeText(text);
-    alert('Скопировано!');
-  }catch(e){
-    const area=document.createElement('textarea');area.value=text;document.body.append(area);area.select();
-    const ok=document.execCommand('copy');area.remove();
-    alert(ok?'Скопировано!':'Не удалось скопировать. Выдели и скопируй текст вручную.');
-  }
-}
-function updateBalance(){document.getElementById('balanceDisplay').textContent='€'+balance.toFixed(2);}
-function sellNumber(index){
-  const entry=inventory[index];
-  if(!entry)return;
-  const value=Math.max(0,Number(entry.price)||0);
-  balance=Number((balance+value).toFixed(2));
-  inventory.splice(index,1);
-  updateBalance();renderInventory();render();saveState();
-  saveStatus.textContent='Продано за €'+value.toFixed(2)+'. Деньги добавлены на баланс.';
-}
-function sellAll(){
-  if(!inventory.length){alert('Инвентарь пуст — продавать нечего.');return;}
-  const total=inventory.reduce((sum,n)=>sum+Math.max(0,Number(n.price)||0),0);
-  if(!confirm('Продать все '+inventory.length+' номеров за €'+total.toFixed(2)+'?'))return;
-  balance=Number((balance+total).toFixed(2));inventory=[];
-  updateBalance();renderInventory();render();saveState();
-  saveStatus.textContent='Все номера проданы за €'+total.toFixed(2)+'. Деньги зачислены на баланс.';
-}
-function addToInventory(entry){
-  if(inventory.some(n=>n.number===entry.number)){alert('Этот номер уже есть в инвентаре.');return;}
-  inventory.unshift({...entry});inventory=inventory.slice(0,500);renderInventory();render();saveState();
-}
-function renderInventory(){
-  const list=document.getElementById('inventoryItems');list.replaceChildren();
-  document.getElementById('collectionBalance').textContent='€'+balance.toFixed(2);
-  document.getElementById('collectionCount').textContent=inventory.length+' / 50';
-  document.getElementById('collectionValue').textContent='€'+inventory.reduce((sum,n)=>sum+Number(n.price||0),0).toFixed(2);
-  let shown=inventory.map((entry,index)=>({...entry,_index:index}));
-  const query=(document.getElementById('searchCollection')?.value||'').trim().toLowerCase();
-  if(query)shown=shown.filter(n=>n.number.toLowerCase().includes(query));
-  if(collectionSort==='price')shown.sort((a,b)=>Number(b.price||0)-Number(a.price||0));
-  if(collectionSort==='rarity'){const order={'Легендарный':5,'Эпический':4,'Редкий':3,'Необычный':2,'Обычный':1};shown.sort((a,b)=>(order[b.rarity]||0)-(order[a.rarity]||0));}
-  if(collectionSort==='alpha')shown.sort((a,b)=>a.number.localeCompare(b.number));
-  document.getElementById('inventoryCount').textContent='('+inventory.length+')';
-  document.getElementById('invTotal').textContent=inventory.length;
-  document.getElementById('invRare').textContent=inventory.filter(n=>['Редкий','Эпический','Легендарный'].includes(n.rarity)).length;
-  document.getElementById('invValue').textContent='€'+inventory.reduce((sum,n)=>sum+Number(n.price||0),0).toFixed(2);
-  shown.forEach((entry)=>{
-    const index=entry._index;
-    const row=document.createElement('div');row.className='inventory-item';
-    const info=document.createElement('div');info.className='number-info';
-    const number=document.createElement('span');number.textContent=entry.number;
-    const rarity=document.createElement('div');rarity.className='rarity';rarity.textContent=entry.rarity||'Обычный';rarity.style.color=entry.color||'#b5bdd6';
-    const price=document.createElement('div');price.className='price';price.textContent='€'+Number(entry.price||0).toFixed(2);
-    info.append(number,rarity,price);
-    const actions=document.createElement('div');actions.className='inventory-actions';
-    const copy=document.createElement('button');copy.className='secondary';copy.textContent='Копировать';copy.addEventListener('click',()=>copyText(entry.number));
-    const sell=document.createElement('button');sell.className='sell-button';sell.textContent='Продать';sell.addEventListener('click',()=>sellNumber(index));
-    const remove=document.createElement('button');remove.className='secondary';remove.textContent='Убрать';remove.addEventListener('click',()=>{if(!confirm('Убрать номер без получения денег?'))return;inventory.splice(index,1);renderInventory();render();saveState();});
-    actions.append(copy,sell,remove);row.append(info,actions);list.append(row);
-  });
-  if(!shown.length)list.innerHTML='<div class="collection-empty">'+(inventory.length?'Ничего не найдено':'Пока пусто — крути номера')+'</div>';
-}
-document.getElementById('openInventory').addEventListener('click',()=>{document.getElementById('inventoryBox').classList.add('open');renderInventory();});
-document.getElementById('closeInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.remove('open'));
-document.getElementById('searchCollection').addEventListener('input',renderInventory);
-function setCollectionSort(sort,label){collectionSort=sort;document.querySelectorAll('.collection-tools button').forEach(b=>b.classList.remove('active'));document.getElementById(label).classList.add('active');renderInventory();}
-document.getElementById('sortDate').addEventListener('click',()=>setCollectionSort('date','sortDate'));
-document.getElementById('sortPrice').addEventListener('click',()=>setCollectionSort('price','sortPrice'));
-document.getElementById('sortRarity').addEventListener('click',()=>setCollectionSort('rarity','sortRarity'));
-document.getElementById('sortAlpha').addEventListener('click',()=>setCollectionSort('alpha','sortAlpha'));
-document.getElementById('filterCollection').addEventListener('click',()=>{const choices=['Все','Редкие и выше','Легендарные'];const choice=prompt('Фильтр коллекции: 1 — Все, 2 — Редкие и выше, 3 — Легендарные','1');if(!choice)return;const input=document.getElementById('searchCollection');if(choice==='2')input.value='';renderInventory();if(choice==='2'||choice==='3'){const list=document.getElementById('inventoryItems');const order={'Легендарный':5,'Эпический':4,'Редкий':3,'Необычный':2,'Обычный':1};[...list.children].forEach(el=>{const text=el.querySelector('.rarity')?.textContent||'';el.style.display=choice==='2'?(order[text]||0)>=3?'flex':'none':text==='Легендарный'?'flex':'none';});}});
-document.getElementById('copyInventory').addEventListener('click',()=>{if(!inventory.length){alert('Инвентарь пока пуст.');return;}copyText(inventory.map(n=>n.number+' — '+n.rarity+' — €'+Number(n.price||0).toFixed(2)).join('\n'));});
-document.getElementById('sellAll').addEventListener('click',sellAll);
-document.getElementById('clearInventory').addEventListener('click',()=>{if(!inventory.length)return;if(!confirm('Удалить все номера из инвентаря?'))return;inventory=[];renderInventory();render();saveState();});
-document.getElementById('generate').addEventListener('click',generate);
-document.getElementById('clearSaved').addEventListener('click',()=>{
-  if(!confirm('Удалить сохранённые результаты с этого устройства?'))return;
-  numbers=[];
-  try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
-  render();
-  saveState();
-  saveStatus.textContent='Сохранённые результаты удалены. Инвентарь сохранён.';
-});
-loadState();function openMainMenu(){document.getElementById("mainMenu").classList.add("open");document.getElementById("generatorPanel").style.display="none";document.querySelector(".balance-bar").style.display="none";document.getElementById("openInventory").style.display="none";document.getElementById("inventoryBox").classList.remove("open");document.getElementById("menuButton").style.display="none";}
-function openGenerator(){document.getElementById("mainMenu").classList.remove("open");document.getElementById("generatorPanel").style.display="block";document.querySelector(".balance-bar").style.display="flex";document.getElementById("openInventory").style.display="block";document.getElementById("menuButton").style.display="block";document.getElementById("inventoryBox").classList.remove("open");}
-document.getElementById("menuButton").addEventListener("click",openMainMenu);
-document.querySelectorAll(".menu-card").forEach(card=>card.addEventListener("click",()=>{if(card.dataset.screen==="generator"){openGenerator();return;}if(card.dataset.screen==="collection"){document.getElementById("mainMenu").classList.remove("open");document.getElementById("menuButton").style.display="block";document.getElementById("generatorPanel").style.display="none";document.querySelector(".balance-bar").style.display="none";document.getElementById("openInventory").style.display="none";document.getElementById("inventoryBox").classList.add("open");renderInventory();return;}alert("Этот раздел пока в разработке.");}));
-document.getElementById("menuBack").addEventListener("click",openMainMenu);
-document.getElementById("closeInventory").addEventListener("click",()=>{document.getElementById("inventoryBox").classList.remove("open");openMainMenu();});
-openMainMenu();
-document.getElementById('copyAll').addEventListener('click',()=>{
-  if(!numbers.length){alert('Сначала сгенерируй результаты.');return;}
-  copyText(numbers.map(item=>typeof item==='string'?item:item.number+' — '+item.rarity+' — €'+Number(item.price||0).toFixed(2)).join('\n'));
-});
-</script>
-</body>
-</html>
+const KEY='phoneTapGame_v2';const $=id=>document.getElementById(id);
+let state={balance:500,drops:0,inventory:[],current:null,luck:0,claimed:[],country:'+49'};
+const countries={'+49':'DE','+7':'RU','+1':'US','+44':'UK','+33':'FR','+34':'ES','+39':'IT','+81':'JP'};
+const screens={menu:'menuScreen',collection:'collectionScreen',shop:'shopScreen',upgrades:'upgradesScreen',tasks:'tasksScreen',stats:'statsScreen',settings:'settingsScreen'};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&typeof x==='object')state={...state,...x};}catch(e){}if(!state.current)state.current={number:'+49 151 234 56 78',rarity:'Обычный',price:5};$('country').value=state.country||'+49';render();}
+function money(n){return '€'+Math.floor(n).toLocaleString('de-DE')}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1900)}
+function rate(d){let score=0;let freq={};for(const c of d)freq[c]=(freq[c]||0)+1;const max=Math.max(...Object.values(freq));if(max>=4)score+=4;else if(max===3)score+=2;else if(max===2)score++;if(/(\d)\1{2,}/.test(d))score+=2;if(/0123|1234|2345|3456|4567|5678|6789|9876|8765|7654|6543|5432|4321/.test(d))score+=2;if(new Set(d).size===1)score+=4;score+=Math.random()*Math.min(state.luck,3);if(score>=7)return {rarity:'Легендарный',price:500+Math.floor(Math.random()*1000),color:'#ffcf62'};if(score>=5)return {rarity:'Эпический',price:100+Math.floor(Math.random()*250),color:'#d6a0ff'};if(score>=3)return {rarity:'Редкий',price:25+Math.floor(Math.random()*70),color:'#79caff'};if(score>=1.5)return {rarity:'Необычный',price:10+Math.floor(Math.random()*15),color:'#79dc91'};return {rarity:'Обычный',price:2+Math.floor(Math.random()*7),color:'#b5bdd6'}}
+function makeNumber(){const code=state.country||'+49';let d='';for(let i=0;i<10;i++)d+=Math.floor(Math.random()*10);return {number:code+' '+d.slice(0,3)+' '+d.slice(3,6)+' '+d.slice(6),...rate(d),id:Date.now()+Math.random()}}
+function render(){ $('balance').textContent=money(state.balance);$('totalDrops').textContent=state.drops;$('ownedCount').textContent=state.inventory.length;$('costLabel').textContent='Стоимость попытки: €10';const c=state.current;$('phoneNumber').textContent=c.number;$('rarity').textContent=c.rarity+' номер';$('rarity').style.color=c.color||'#b5bdd6';$('worth').textContent='Стоимость: '+money(c.price);$('serial').textContent='#'+String(state.drops||1).padStart(6,'0');$('countryTag').textContent=countries[state.country]||'☎';$('colCount').textContent=state.inventory.length;$('colValue').textContent=money(state.inventory.reduce((s,n)=>s+n.price,0));$('statsDrops').textContent=state.drops;$('statsRare').textContent=state.inventory.filter(n=>n.rarity==='Редкий'||n.rarity==='Эпический'||n.rarity==='Легендарный').length;$('luckStatus').textContent='Уровень удачи: '+state.luck;renderCollection();save()}
+function tap(){if(state.balance<10){toast('Не хватает денег — загляни в магазин');return}state.balance-=10;state.drops++;state.current=makeNumber();$('tapBtn').classList.remove('pulse');void $('tapBtn').offsetWidth;$('tapBtn').classList.add('pulse');render();toast('Выпал: '+state.current.rarity+'!')}
+function openScreen(name){Object.values(screens).forEach(id=>$(id).classList.remove('open'));if(name==='game')return;$ (screens[name]||screens.menu).classList.add('open');if(name==='collection')renderCollection();render()}
+function renderCollection(){const list=$('collectionList');if(!list)return;list.replaceChildren();const q=($('search')?.value||'').toLowerCase();const arr=state.inventory.filter(n=>n.number.toLowerCase().includes(q));if(!arr.length){const p=document.createElement('p');p.className='muted';p.textContent=state.inventory.length?'Ничего не найдено':'Коллекция пока пуста. Тапни, чтобы выбить первый номер!';list.append(p);return}arr.forEach(n=>{const row=document.createElement('div');row.className='item';const info=document.createElement('div');info.className='itemtext';const strong=document.createElement('strong');strong.textContent=n.number;const small=document.createElement('small');small.textContent=n.rarity+' · '+money(n.price);small.style.color=n.color;info.append(strong,small);const btn=document.createElement('button');btn.className='green';btn.textContent='Продать';btn.onclick=()=>{state.inventory=state.inventory.filter(x=>x.id!==n.id);state.balance+=n.price;render();toast('Продано за '+money(n.price))};row.append(info,btn);list.append(row)})}
+$('tapBtn').addEventListener('click',tap);$('menuBtn').addEventListener('click',()=>openScreen('menu'));document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>openScreen('game')));document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openScreen(b.dataset.open)));
+$('phoneNumber').addEventListener('click',()=>{if(!state.inventory.some(n=>n.number===state.current.number)){state.inventory.unshift({...state.current,id:state.current.id||Date.now()+Math.random()});state.inventory=state.inventory.slice(0,500);render();toast('Добавлено в коллекцию')}else toast('Этот номер уже в коллекции')});
+$('sellAll').addEventListener('click',()=>{if(!state.inventory.length){toast('Коллекция пуста');return}const total=state.inventory.reduce((s,n)=>s+n.price,0);state.balance+=total;state.inventory=[];render();toast('Все номера проданы: '+money(total))});
+$('search').addEventListener('input',renderCollection);$('bonusBtn').addEventListener('click',()=>{state.balance+=100;render();toast('Получено '+money(100))});$('bigBonusBtn').addEventListener('click',()=>{state.balance+=500;render();toast('Получено '+money(500))});
+$('luckBtn').addEventListener('click',()=>{const cost=250*(state.luck+1);if(state.balance<cost){toast('Нужно '+money(cost));return}state.balance-=cost;state.luck++;render();toast('Удача улучшена!')});
+$('taskOne').addEventListener('click',()=>{if(state.claimed.includes('one'))return toast('Награда уже получена');if(state.drops<1)return toast('Сначала выбей номер');state.claimed.push('one');state.balance+=50;render();toast('Награда: €50')});
+$('taskFive').addEventListener('click',()=>{if(state.claimed.includes('five'))return toast('Награда уже получена');if(state.inventory.length<5)return toast('Нужно 5 номеров в коллекции');state.claimed.push('five');state.balance+=150;render();toast('Награда: €150')});
+$('country').addEventListener('change',e=>{state.country=e.target.value;save()});
+$('resetBtn').addEventListener('click',()=>{if(!confirm('Точно сбросить весь прогресс?'))return;state={balance:500,drops:0,inventory:[],current:{number:'+49 151 234 56 78',rarity:'Обычный',price:5,color:'#b5bdd6'},luck:0,claimed:[],country:'+49'};render();openScreen('game');toast('Прогресс сброшен')});
+load();
+</script></body></html>
