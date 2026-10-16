@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b0d16">
 <title>Phone Generator</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:24px 16px;min-height:100vh;background:radial-gradient(ellipse at top,#20204a 0,#0b0d16 55%);color:#f4f5ff;font-family:system-ui,Arial,sans-serif}main{max-width:620px;margin:auto}header{text-align:center;padding:12px 0 20px}h1{font-size:clamp(28px,7vw,40px);margin:8px 0;color:#a99dff}header p,.muted{color:#a9aec5;line-height:1.5}.panel{background:#151827eF;border:1px solid #30354e;border-radius:20px;padding:20px;box-shadow:0 18px 55px #0005}label{display:block;margin:16px 0 8px;font-weight:650}select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #414762;background:#0e1120;color:white;font-size:16px}button{background:linear-gradient(135deg,#7665ff,#5545d8);border:0;font-weight:750;margin-top:14px;cursor:pointer}button.secondary{background:#282e45;border:1px solid #414762}button:active{transform:scale(.99)}.note{font-size:13px;color:#a9aec5;line-height:1.5;margin-top:18px}.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}.results-head h2{font-size:18px}.number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:9px;background:#20243a;border:1px solid #303650;border-radius:12px}.number span{font-family:ui-monospace,monospace;overflow-wrap:anywhere}.number button{width:auto;flex-shrink:0;margin:0;padding:9px 12px;font-size:13px}.empty{color:#a9aec5;text-align:center;padding:18px 0}.footer{text-align:center;color:#747c98;font-size:12px;margin:18px 0}
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:24px 16px;min-height:100vh;background:radial-gradient(ellipse at top,#20204a 0,#0b0d16 55%);color:#f4f5ff;font-family:system-ui,Arial,sans-serif}main{max-width:620px;margin:auto}header{text-align:center;padding:12px 0 20px}h1{font-size:clamp(28px,7vw,40px);margin:8px 0;color:#a99dff}header p,.muted{color:#a9aec5;line-height:1.5}.panel{background:#151827eF;border:1px solid #30354e;border-radius:20px;padding:20px;box-shadow:0 18px 55px #0005}label{display:block;margin:16px 0 8px;font-weight:650}select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #414762;background:#0e1120;color:white;font-size:16px}button{background:linear-gradient(135deg,#7665ff,#5545d8);border:0;font-weight:750;margin-top:14px;cursor:pointer}button.secondary{background:#282e45;border:1px solid #414762}button:active{transform:scale(.99)}.note{font-size:13px;color:#a9aec5;line-height:1.5;margin-top:18px}.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}.results-head h2{font-size:18px}.number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:9px;background:#20243a;border:1px solid #303650;border-radius:12px}.number span{font-family:ui-monospace,monospace;overflow-wrap:anywhere}.number-info{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}.rarity{font:700 12px system-ui,Arial,sans-serif;letter-spacing:.2px}.price{font:700 14px system-ui,Arial,sans-serif;color:#ffcf62}.number button{width:auto;flex-shrink:0;margin:0;padding:9px 12px;font-size:13px}.empty{color:#a9aec5;text-align:center;padding:18px 0}.footer{text-align:center;color:#747c98;font-size:12px;margin:18px 0}
 </style>
 </head>
 <body>
@@ -23,7 +23,7 @@
 <button class="secondary" id="clearSaved">Очистить сохранённые результаты</button>
 <div class="results-head"><h2>Результаты</h2><span class="muted" id="count">0</span></div>
 <div id="results"><div class="empty">Нажми «Сгенерировать», чтобы начать.</div></div>
-<p class="note">Важно: отображаются все цифры, но номера генерируются случайно и не проверяются. Это демонстрационные данные — они могут случайно совпасть с реальными номерами; не используй их для звонков или SMS.</p>
+<p class="note">Цены в евро — условная игровая оценка по красивым комбинациям цифр, а не реальная рыночная стоимость. Номера случайные, не проверяются и могут совпасть с реальными; не используй их для звонков или SMS.</p>
 </section>
 <div class="footer">Phone Generator · работает прямо в браузере</div>
 </main>
@@ -47,9 +47,33 @@ function loadState(){
     if(!saved)return;
     if(saved.country && [...country.options].some(o=>o.value===saved.country))country.value=saved.country;
     if(saved.amount && [...amount.options].some(o=>o.value===saved.amount))amount.value=saved.amount;
-    if(Array.isArray(saved.numbers))numbers=saved.numbers.filter(n=>typeof n==='string').slice(0,100);
+    if(Array.isArray(saved.numbers))numbers=saved.numbers.filter(n=>typeof n==='string'||(n&&typeof n.number==='string')).slice(0,100).map(n=>typeof n==='string'?{number:n,...rateNumber(n)}:n);
     if(numbers.length)render();
   }catch(e){saveStatus.textContent='Не удалось загрузить сохранённые данные.';}
+}
+function rateNumber(number){
+  const digits=number.replace(/^\\+\\d+\\s*/, '').replace(/\\D/g,'');
+  let score=0;
+  // Оцениваем повторы, одинаковые соседние цифры и последовательности.
+  const freq={}; for(const d of digits)freq[d]=(freq[d]||0)+1;
+  const maxRepeat=Math.max(...Object.values(freq));
+  if(maxRepeat>=4)score+=4; else if(maxRepeat===3)score+=2; else if(maxRepeat===2)score+=1;
+  let longest=1,run=1;
+  for(let i=1;i<digits.length;i++){
+    const diff=Number(digits[i])-Number(digits[i-1]);
+    if(Math.abs(diff)===1){run++;longest=Math.max(longest,run);}else run=1;
+  }
+  if(longest>=5)score+=4; else if(longest>=4)score+=2;
+  if(/(\\d)\\1{2,}/.test(digits))score+=2;
+  if(digits===digits.split('').reverse().join(''))score+=4;
+  if(new Set(digits).size===digits.length)score+=1;
+  let rarity,price,color;
+  if(score>=8){rarity='Легендарный';price=Number((150+Math.random()*850).toFixed(2));color='#ffcf62';}
+  else if(score>=6){rarity='Эпический';price=Number((40+Math.random()*110).toFixed(2));color='#d7a0ff';}
+  else if(score>=4){rarity='Редкий';price=Number((10+Math.random()*30).toFixed(2));color='#7dc8ff';}
+  else if(score>=2){rarity='Необычный';price=Number((2+Math.random()*8).toFixed(2));color='#79dc91';}
+  else {rarity='Обычный';price=Number((0.1+Math.random()*1.9).toFixed(2));color='#b5bdd6';}
+  return {rarity,price,color,score};
 }
 function generate(){
   const code=country.value;
@@ -58,7 +82,8 @@ function generate(){
   for(let i=0;i<qty;i++){
     let digits='';
     for(let j=0;j<10;j++) digits+=Math.floor(Math.random()*10);
-    numbers.push(code+' '+digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6));
+    const number=code+' '+digits.slice(0,3)+' '+digits.slice(3,6)+' '+digits.slice(6);
+    numbers.push({number,...rateNumber(number)});
   }
   render();
   saveState();
@@ -66,12 +91,17 @@ function generate(){
 function render(){
   results.replaceChildren();
   count.textContent=numbers.length+' шт.';
-  numbers.forEach(number=>{
+  numbers.forEach(item=>{
+    const entry=typeof item==='string'?{number:item,...rateNumber(item)}:item;
     const row=document.createElement('div');row.className='number';
-    const value=document.createElement('span');value.textContent=number;
+    const info=document.createElement('div');info.className='number-info';
+    const value=document.createElement('span');value.textContent=entry.number;
+    const rarity=document.createElement('div');rarity.className='rarity';rarity.textContent=entry.rarity;rarity.style.color=entry.color||'#b5bdd6';
+    const price=document.createElement('div');price.className='price';price.textContent='€'+Number(entry.price||0).toFixed(2);
+    info.append(value,rarity,price);
     const btn=document.createElement('button');btn.className='secondary';btn.textContent='Копировать';
-    btn.addEventListener('click',()=>copyText(number));
-    row.append(value,btn);results.append(row);
+    btn.addEventListener('click',()=>copyText(entry.number));
+    row.append(info,btn);results.append(row);
   });
   if(numbers.length===0)results.innerHTML='<div class="empty">Сохранённых результатов нет.</div>';
 }
@@ -96,7 +126,7 @@ document.getElementById('clearSaved').addEventListener('click',()=>{
 loadState();
 document.getElementById('copyAll').addEventListener('click',()=>{
   if(!numbers.length){alert('Сначала сгенерируй результаты.');return;}
-  copyText(numbers.join('\n'));
+  copyText(numbers.map(item=>typeof item==='string'?item:item.number+' — '+item.rarity+' — €'+Number(item.price||0).toFixed(2)).join('\n'));
 });
 </script>
 </body>
