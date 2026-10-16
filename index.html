@@ -7,11 +7,31 @@
 <title>Phone Generator</title>
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:24px 16px;min-height:100vh;background:radial-gradient(ellipse at top,#20204a 0,#0b0d16 55%);color:#f4f5ff;font-family:system-ui,Arial,sans-serif}main{max-width:620px;margin:auto}header{text-align:center;padding:12px 0 20px}h1{font-size:clamp(28px,7vw,40px);margin:8px 0;color:#a99dff}header p,.muted{color:#a9aec5;line-height:1.5}.panel{background:#151827eF;border:1px solid #30354e;border-radius:20px;padding:20px;box-shadow:0 18px 55px #0005}label{display:block;margin:16px 0 8px;font-weight:650}select,button{width:100%;padding:14px;border-radius:12px;border:1px solid #414762;background:#0e1120;color:white;font-size:16px}button{background:linear-gradient(135deg,#7665ff,#5545d8);border:0;font-weight:750;margin-top:14px;cursor:pointer}button.secondary{background:#282e45;border:1px solid #414762}button:active{transform:scale(.99)}.note{font-size:13px;color:#a9aec5;line-height:1.5;margin-top:18px}.results-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px}.results-head h2{font-size:18px}.number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin-top:9px;background:#20243a;border:1px solid #303650;border-radius:12px}.number span{font-family:ui-monospace,monospace;overflow-wrap:anywhere}.number-info{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}.rarity{font:700 12px system-ui,Arial,sans-serif;letter-spacing:.2px}.price{font:700 14px system-ui,Arial,sans-serif;color:#ffcf62}.number button{width:auto;flex-shrink:0;margin:0;padding:9px 12px;font-size:13px}.empty{color:#a9aec5;text-align:center;padding:18px 0}.footer{text-align:center;color:#747c98;font-size:12px;margin:18px 0}
+.inventory-open{margin:0 0 16px;background:linear-gradient(135deg,#16a085,#087f8c)}
+.inventory-box{display:none;margin:0 0 18px;background:#111827;border:1px solid #3a4562;border-radius:18px;padding:16px}
+.inventory-box.open{display:block}.inventory-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.inventory-top h2{margin:0;font-size:21px}.inventory-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.inventory-stat{background:#20243a;border:1px solid #303650;border-radius:12px;padding:10px;text-align:center}.inventory-stat strong{display:block;font-size:19px;color:#a99dff}.inventory-stat span{font-size:11px;color:#a9aec5}
+.inventory-item{padding:12px;margin-top:8px;border:1px solid #303650;background:#20243a;border-radius:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.inventory-item .number-info{overflow:hidden}.inventory-actions{display:flex;flex-direction:column;gap:6px}.inventory-actions button{width:auto;margin:0;padding:8px 10px;font-size:12px}.small-button{width:auto!important;margin:0!important;padding:9px 12px!important;font-size:13px!important}
 </style>
 </head>
 <body>
 <main>
 <header><div style="font-size:38px">☎</div><h1>Phone Generator</h1><p>Генератор демонстрационных телефонных данных</p></header>
+<button class="inventory-open" id="openInventory">🎒 Открыть инвентарь <span id="inventoryCount">0</span></button>
+<section class="inventory-box" id="inventoryBox" aria-label="Инвентарь">
+  <div class="inventory-top"><h2>🎒 Мой инвентарь</h2><button class="secondary small-button" id="closeInventory">Закрыть</button></div>
+  <p class="muted">Собирай красивые номера и храни коллекцию на этом устройстве.</p>
+  <div class="inventory-stats">
+    <div class="inventory-stat"><strong id="invTotal">0</strong><span>Номеров</span></div>
+    <div class="inventory-stat"><strong id="invRare">0</strong><span>Редких+</span></div>
+    <div class="inventory-stat"><strong id="invValue">€0</strong><span>Условная цена</span></div>
+  </div>
+  <button class="secondary" id="copyInventory">Копировать коллекцию</button>
+  <button class="secondary" id="clearInventory">Очистить инвентарь</button>
+  <div id="inventoryItems"><div class="empty">Инвентарь пока пуст.</div></div>
+</section>
 <section class="panel">
 <label for="country">Страна / код</label>
 <select id="country"><option value="+49">Германия (+49)</option><option value="+7">Россия (+7)</option><option value="+1">США (+1)</option><option value="+44">Великобритания (+44)</option><option value="+33">Франция (+33)</option><option value="+34">Испания (+34)</option><option value="+39">Италия (+39)</option><option value="+81">Япония (+81)</option></select>
@@ -29,6 +49,7 @@
 </main>
 <script>
 let numbers=[];
+let inventory=[];
 const country=document.getElementById('country');
 const amount=document.getElementById('amount');
 const results=document.getElementById('results');
@@ -37,7 +58,7 @@ const saveStatus=document.getElementById('saveStatus');
 const STORAGE_KEY='phoneGeneratorSavedState_v1';
 function saveState(){
   try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({numbers,country:country.value,amount:amount.value}));
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({numbers,inventory,country:country.value,amount:amount.value}));
     saveStatus.textContent='✓ Результаты сохранены автоматически на этом устройстве.';
   }catch(e){saveStatus.textContent='Не удалось сохранить данные в браузере.';}
 }
@@ -48,7 +69,9 @@ function loadState(){
     if(saved.country && [...country.options].some(o=>o.value===saved.country))country.value=saved.country;
     if(saved.amount && [...amount.options].some(o=>o.value===saved.amount))amount.value=saved.amount;
     if(Array.isArray(saved.numbers))numbers=saved.numbers.filter(n=>typeof n==='string'||(n&&typeof n.number==='string')).slice(0,100).map(n=>typeof n==='string'?{number:n,...rateNumber(n)}:n);
+    if(Array.isArray(saved.inventory))inventory=saved.inventory.filter(n=>n&&typeof n.number==='string').slice(0,500);
     if(numbers.length)render();
+    renderInventory();
   }catch(e){saveStatus.textContent='Не удалось загрузить сохранённые данные.';}
 }
 function rateNumber(number){
@@ -99,9 +122,12 @@ function render(){
     const rarity=document.createElement('div');rarity.className='rarity';rarity.textContent=entry.rarity;rarity.style.color=entry.color||'#b5bdd6';
     const price=document.createElement('div');price.className='price';price.textContent='€'+Number(entry.price||0).toFixed(2);
     info.append(value,rarity,price);
+    const actions=document.createElement('div');actions.className='inventory-actions';
     const btn=document.createElement('button');btn.className='secondary';btn.textContent='Копировать';
     btn.addEventListener('click',()=>copyText(entry.number));
-    row.append(info,btn);results.append(row);
+    const add=document.createElement('button');add.textContent=inventory.some(n=>n.number===entry.number)?'✓ В инвентаре':'+ В инвентарь';add.className=inventory.some(n=>n.number===entry.number)?'secondary':'';add.disabled=inventory.some(n=>n.number===entry.number);
+    add.addEventListener('click',()=>addToInventory(entry));
+    actions.append(btn,add);row.append(info,actions);results.append(row);
   });
   if(numbers.length===0)results.innerHTML='<div class="empty">Сохранённых результатов нет.</div>';
 }
@@ -115,13 +141,42 @@ async function copyText(text){
     alert(ok?'Скопировано!':'Не удалось скопировать. Выдели и скопируй текст вручную.');
   }
 }
+function addToInventory(entry){
+  if(inventory.some(n=>n.number===entry.number)){alert('Этот номер уже есть в инвентаре.');return;}
+  inventory.unshift({...entry});inventory=inventory.slice(0,500);renderInventory();render();saveState();
+}
+function renderInventory(){
+  const list=document.getElementById('inventoryItems');list.replaceChildren();
+  document.getElementById('inventoryCount').textContent='('+inventory.length+')';
+  document.getElementById('invTotal').textContent=inventory.length;
+  document.getElementById('invRare').textContent=inventory.filter(n=>['Редкий','Эпический','Легендарный'].includes(n.rarity)).length;
+  document.getElementById('invValue').textContent='€'+inventory.reduce((sum,n)=>sum+Number(n.price||0),0).toFixed(2);
+  inventory.forEach((entry,index)=>{
+    const row=document.createElement('div');row.className='inventory-item';
+    const info=document.createElement('div');info.className='number-info';
+    const number=document.createElement('span');number.textContent=entry.number;
+    const rarity=document.createElement('div');rarity.className='rarity';rarity.textContent=entry.rarity||'Обычный';rarity.style.color=entry.color||'#b5bdd6';
+    const price=document.createElement('div');price.className='price';price.textContent='€'+Number(entry.price||0).toFixed(2);
+    info.append(number,rarity,price);
+    const actions=document.createElement('div');actions.className='inventory-actions';
+    const copy=document.createElement('button');copy.className='secondary';copy.textContent='Копировать';copy.addEventListener('click',()=>copyText(entry.number));
+    const remove=document.createElement('button');remove.className='secondary';remove.textContent='Убрать';remove.addEventListener('click',()=>{inventory.splice(index,1);renderInventory();render();saveState();});
+    actions.append(copy,remove);row.append(info,actions);list.append(row);
+  });
+  if(!inventory.length)list.innerHTML='<div class="empty">Инвентарь пока пуст. Добавь номер кнопкой «+ В инвентарь».</div>';
+}
+document.getElementById('openInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.add('open'));
+document.getElementById('closeInventory').addEventListener('click',()=>document.getElementById('inventoryBox').classList.remove('open'));
+document.getElementById('copyInventory').addEventListener('click',()=>{if(!inventory.length){alert('Инвентарь пока пуст.');return;}copyText(inventory.map(n=>n.number+' — '+n.rarity+' — €'+Number(n.price||0).toFixed(2)).join('\\n'));});
+document.getElementById('clearInventory').addEventListener('click',()=>{if(!inventory.length)return;if(!confirm('Удалить все номера из инвентаря?'))return;inventory=[];renderInventory();render();saveState();});
 document.getElementById('generate').addEventListener('click',generate);
 document.getElementById('clearSaved').addEventListener('click',()=>{
   if(!confirm('Удалить сохранённые результаты с этого устройства?'))return;
   numbers=[];
   try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
   render();
-  saveStatus.textContent='Сохранённые результаты удалены.';
+  saveState();
+  saveStatus.textContent='Сохранённые результаты удалены. Инвентарь сохранён.';
 });
 loadState();
 document.getElementById('copyAll').addEventListener('click',()=>{
